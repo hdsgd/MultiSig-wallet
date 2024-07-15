@@ -14,12 +14,7 @@
 					},
 					{
 						"internalType": "uint256",
-						"name": "_numConfirmationsRequiredA",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_numConfirmationsRequiredB",
+						"name": "_numConfirmationsRequired",
 						"type": "uint256"
 					}
 				],
@@ -70,12 +65,6 @@
 					{
 						"indexed": true,
 						"internalType": "address",
-						"name": "oldOwner",
-						"type": "address"
-					},
-					{
-						"indexed": true,
-						"internalType": "address",
 						"name": "newOwner",
 						"type": "address"
 					}
@@ -122,7 +111,7 @@
 						"type": "address"
 					}
 				],
-				"name": "addNewOwnerProposal",
+				"name": "addOwner",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -258,20 +247,7 @@
 			},
 			{
 				"inputs": [],
-				"name": "numConfirmationsRequiredA",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "numConfirmationsRequiredB",
+				"name": "numConfirmationsRequired",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -296,40 +272,6 @@
 						"internalType": "address",
 						"name": "",
 						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"name": "quorum",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "to",
-						"type": "address"
-					},
-					{
-						"internalType": "bytes",
-						"name": "data",
-						"type": "bytes"
-					},
-					{
-						"internalType": "bool",
-						"name": "executed",
-						"type": "bool"
-					},
-					{
-						"internalType": "uint256",
-						"name": "numConfirmations",
-						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -366,7 +308,7 @@
 						"type": "address"
 					}
 				],
-				"name": "swapOwnerProposal",
+				"name": "swapOwner",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -404,11 +346,84 @@
 				],
 				"stateMutability": "view",
 				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_newValue",
+						"type": "uint256"
+					}
+				],
+				"name": "updateConfirmationsRequired",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
 			}
 		],
 		"devdoc": {
+			"author": "Gustavo Henrique / gustavohenrisantos@gmail.com",
 			"kind": "dev",
-			"methods": {},
+			"methods": {
+				"addOwner(address)": {
+					"params": {
+						"_newOwner": "Novo votante"
+					}
+				},
+				"confirmTransaction(uint256)": {
+					"params": {
+						"_txIndex": "Índice da proposta de votação"
+					}
+				},
+				"constructor": {
+					"details": "Definição de parametros :  {_owners} -> Array de votantes  {_numConfirmationsRequired} -> Número de confirmações necessárias para aprovação"
+				},
+				"executeTransaction(uint256)": {
+					"params": {
+						"_txIndex": "Índice da proposta de votação"
+					}
+				},
+				"getOwners()": {
+					"returns": {
+						"_0": "Array de votantes"
+					}
+				},
+				"getTransaction(uint256)": {
+					"params": {
+						"_txIndex": "Índice da proposta de votação"
+					},
+					"returns": {
+						"data": "Data a ser executado ou executado",
+						"executed": "Bool de confirmação de execução de transação false -> não executada",
+						"numConfirmations": "Número de confirmações já realizadas",
+						"to": "endereço de execução da transação proposta"
+					}
+				},
+				"getTransactionCount()": {
+					"returns": {
+						"_0": "Uint de quantidade"
+					}
+				},
+				"submitTransaction(address,bytes)": {
+					"details": "É necessário que o número mínimo de aprovações seja atingido",
+					"params": {
+						"_data": "Data para ser executado , exemplo em contrato anexo ERC20 getPauseData()   ",
+						"_to": "Endereço para onde será executado"
+					}
+				},
+				"swapOwner(address,address)": {
+					"params": {
+						"_newOwner": "Novo votante",
+						"_removeOwner": "Votante a ser removido"
+					}
+				},
+				"updateConfirmationsRequired(uint256)": {
+					"params": {
+						"_newValue": "Número de aprovações necessárias"
+					}
+				}
+			},
+			"title": "Carteira Multisig para execução de operações em contratos",
 			"version": 1
 		},
 		"userdoc": {
@@ -419,7 +434,7 @@
 				"ExecuteTransaction(address,uint256)": {
 					"notice": "Transação executada"
 				},
-				"OwnerChanged(address,address)": {
+				"OwnerChanged(address)": {
 					"notice": "Alteração de owner"
 				},
 				"SubmitTransaction(address,uint256,address,bytes)": {
@@ -427,7 +442,48 @@
 				}
 			},
 			"kind": "user",
-			"methods": {},
+			"methods": {
+				"addOwner(address)": {
+					"notice": "Método para adição de carteira votante"
+				},
+				"confirmTransaction(uint256)": {
+					"notice": "Método para confirmar nova transação , voto"
+				},
+				"confirmationsByUser(uint256,address)": {
+					"notice": "Checagem de confirmação de uma proposta usando índice e carteira votante"
+				},
+				"executeTransaction(uint256)": {
+					"notice": "Método para executar transação"
+				},
+				"getOwners()": {
+					"notice": "Método para retornar array de votantes"
+				},
+				"getTransaction(uint256)": {
+					"notice": "Método para retornar quantidade de propostas"
+				},
+				"getTransactionCount()": {
+					"notice": "Método para retornar quantidade de propostas"
+				},
+				"isOwner(address)": {
+					"notice": "Mapping para verificação de se wallet é votante"
+				},
+				"numConfirmationsRequired()": {
+					"notice": "Número de confirmações necessárias"
+				},
+				"owners(uint256)": {
+					"notice": "Array de votantes"
+				},
+				"submitTransaction(address,bytes)": {
+					"notice": "Método para submeter nova transação"
+				},
+				"swapOwner(address,address)": {
+					"notice": "Método para troca de carteiras votantes"
+				},
+				"updateConfirmationsRequired(uint256)": {
+					"notice": "Método para alteração de número mínimo de confirmações"
+				}
+			},
+			"notice": "MultiSigWallet",
 			"version": 1
 		}
 	},
@@ -448,11 +504,11 @@
 	},
 	"sources": {
 		"Contracts/Multisig.sol": {
-			"keccak256": "0xa1e18f3eb354689a20acabcc0c022406ec0a07087799ae0ffd3acd359da6366b",
+			"keccak256": "0x7822ffb4182182e9d5fcafdef1240bbd5c81d51eed4d807ed0b7e1b79d4dee42",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://270f6cf26ae2372872447b8749aff193cf48a501308128514fff2db473af7665",
-				"dweb:/ipfs/QmWoYwh7iEGm3asNFuDMUQjNr2KdoLSBnoKuqJrqzTSEec"
+				"bzz-raw://bc09ddd9dac3ede1fc2d5ca30c3e0fa529a5aaa93b76c61ca314b31cc8b545a2",
+				"dweb:/ipfs/QmNT6H8ww4zUwBvpPRGyQ96jRpEjBYKNjEppPVUL4cqrLK"
 			]
 		}
 	},
